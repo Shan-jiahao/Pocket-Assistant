@@ -2,11 +2,9 @@
 
 This independent repository ships the Chinese-first Pocket Assistant iPhone
 target. Product entry points are README.md and docs/product-guide.zh-CN.md.
-Upstream code and engineering rules below are retained for shared control code.
-Inherited workflows in .github/upstream-workflows are reference-only.
 
-Open-source iOS + Android app to connect to and monitor DJI Osmo Pocket cameras —
-primarily **Osmo Pocket 4 / 4 Pro**, with Nano live view on AVC.
+Pocket Assistant connects an iPhone to a supported Pocket camera for Chinese
+head tracking, gimbal, capture, and device workflows without a video monitor.
 
 ## Stack & paths
 
@@ -53,7 +51,7 @@ primarily **Osmo Pocket 4 / 4 Pro**, with Nano live view on AVC.
 - **watchdog** — stall, GOP-reset grace, recover `0x09/0xa8`: [`docs/feed-watchdog.md`](docs/feed-watchdog.md)
 - **reliability** — freeze-in-seconds, ACK windows, repair owner: [`docs/connection-reliability.md`](docs/connection-reliability.md)
 - **protocol** — DUML, BLE, opcode, pktType, HEVC/AVC payload: `handbook/src/content/docs/protocol/`
-- **handbook** — public docs at openpocketcine.app/docs, setup, iOS/Android app pages: `handbook/src/content/docs/`
+- **handbook** — product and engineering pages under `handbook/src/content/docs/`
 - **hygiene** — commit/PR that might touch secrets, LUTs, captures, identity: [`docs/commit-hygiene.md`](docs/commit-hygiene.md)
 - **contributing** — issues vs discussions, labels, human setup: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - **budget** — smoothness, fps, jank, HUD Hz, scope tap, ACK rate, thermal: [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md)

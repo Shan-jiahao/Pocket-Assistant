@@ -122,7 +122,6 @@ Wi-Fi 列表中出现相机，或系统显示已连接 Wi-Fi，不等于应用�
 
 不提供视频监看、波形图、LUT、媒体浏览、素材下载或云端交付界面。
 不提供手机或相机固件升级，也未交付独立 Android 版 Pocket助手。
-源码仍包含为复用构建而保留的上游模块，这不代表相关功能已作为本产品开放。
 
 ## 验证状态与后续验收
 
@@ -133,9 +132,7 @@ Wi-Fi 列表中出现相机，或系统显示已连接 Wi-Fi，不等于应用�
 每次硬件验收应检查：连接与重连、动作数据、校准、两个方向跟随、停止、
 手动摇杆松手停止、回中、旋转、录制起止，以及断连和切后台后的安全停止。
 
-## 开源与来源
+## 开源许可
 
-本产品基于 [OpenPocketCine](https://github.com/erik-sutton95/OpenPocketCine)，
-复用 BLE → 相机 Wi-Fi → UDP/DUML → 云台的控制链路与现有 HeadTrack 控制器。
-项目采用 Apache License 2.0，版权声明及第三方许可见仓库 LICENSE、NOTICE 和
+项目采用 Apache License 2.0。版权声明及第三方许可见仓库 LICENSE、NOTICE 和
 THIRD-PARTY-NOTICES.md。本项目与 DJI、Apple 不存在官方隶属或背书关系。

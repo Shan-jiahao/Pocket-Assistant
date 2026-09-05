@@ -34,27 +34,21 @@ Pocket助手是一款以头追控制为核心的中文 iPhone 应用。佩戴可
 ```sh
 cd ios
 xcodegen generate
-open OpenPocketCine.xcodeproj
+open ./*.xcodeproj
 ```
 
 在 Xcode 中选择 `PocketAssistant` scheme，配置自己的 Team 和 Bundle Identifier，
-选择 iPhone 后运行。不要使用仓库中继承的 Team 作为自己的签名配置。
+选择 iPhone 后运行。签名配置应使用开发者自己的 Team 和 Bundle Identifier。
 免费 Personal Team 的相机 Wi-Fi 连接可能需要手动操作，详见说明书。
 
 ```sh
 just check
 ```
 
-## 项目来源与边界
+## 项目边界与许可
 
-本仓库基于 [OpenPocketCine](https://github.com/erik-sutton95/OpenPocketCine)
-及 [头追开发分支](https://github.com/Shan-jiahao/OpenPocketCine/tree/feature/headtrack-mvp)
-建立，独立仓库初始代码基线为 `db9ab5f`。
-保留共享 Swift 核心、iOS 控制层及上游参考代码，以维持现有构建与协议行为。
-仓库中的 Android 和监看代码属于上游实现，不代表 Pocket助手已推出对应产品。
-
-上游说明保存在 [README-OpenPocketCine.md](README-OpenPocketCine.md)。
-继承的工作流移至 `.github/upstream-workflows/` 作为参考，不自动执行发布。
+当前对外产品为中文 iPhone 应用 Pocket助手。仓库中的其他开发目录不代表对应功能
+已经作为 Pocket助手产品交付；实际功能与兼容范围以本说明和实机验证为准。
 
 遵循 [Apache License 2.0](LICENSE)，保留 [NOTICE](NOTICE) 和
 [第三方许可](THIRD-PARTY-NOTICES.md)。本项目不是 DJI 或 Apple 官方产品。

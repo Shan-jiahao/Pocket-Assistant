@@ -7,10 +7,10 @@ Never store secrets, camera credentials, captures, or personal data here.
 
 ## Current decisions
 
-- 2026-09-05: Pocket Assistant has an independent repository initialized from
-  OpenPocketCine head-tracking commit db9ab5f. Its Chinese product manual lives
-  in docs/product-guide.zh-CN.md. Upstream licenses and attribution remain;
-  inherited deployment workflows are reference-only until separately configured.
+- 2026-09-05: Pocket Assistant has an independent public repository. Its Chinese
+  product manual lives in docs/product-guide.zh-CN.md. Product-facing material
+  presents Pocket Assistant independently; required Apache 2.0 license,
+  copyright, NOTICE, and third-party notices remain in their legal files.
 
 - 2026-09-04: PocketHeadTrack MVP reuses the existing iOS Pocket 4/4 Pro
   BLE → SoftAP → UDP/DUML → gimbal path, `HeadphoneMotionBridge`, and

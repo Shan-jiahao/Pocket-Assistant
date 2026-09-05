@@ -5,10 +5,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve OpenPocketCine. Describe what you saw in your own words.
+        感谢你帮助改进 Pocket助手。请描述你预期发生什么，以及实际发生了什么。
         Only the first question is required, and you can skip anything marked **optional**.
 
-        Open the signed-in [bug-report form](https://github.com/erik-sutton95/OpenPocketCine/issues/new?template=bug_report.yml) directly at
+        Open the signed-in [bug-report form](https://github.com/Shan-jiahao/Pocket-Assistant/issues/new?template=bug_report.yml) directly at
         any time. Do not include camera Wi-Fi passwords, packet captures, or other secrets.
 
   - type: textarea
@@ -17,7 +17,7 @@ body:
       label: What went wrong?
       description: Tell us what you expected to happen and what happened instead.
       placeholder: |
-        Example: I expected the live camera view to keep playing, but it froze after about 10 seconds.
+        Example: I expected head tracking to become ready, but the app kept waiting for motion data.
     validations:
       required: true
 
@@ -29,8 +29,8 @@ body:
       placeholder: |
         Example:
         1. Connected to my Osmo Pocket 4 over Wi-Fi
-        2. Opened the live monitor
-        3. Rotated the gimbal
+        2. Opened Head Track
+        3. Calibrated the gimbal
 
   - type: textarea
     id: attachments
@@ -57,8 +57,8 @@ body:
     id: platform
     attributes:
       label: App version and device (optional)
-      description: Include your OpenPocketCine version, device model, and OS version, if you know.
-      placeholder: "Example: OpenPocketCine on iPhone 16 Pro on iOS 18.5, or Pixel 9 on Android 16"
+      description: Include your Pocket Assistant version, iPhone model, and iOS version, if you know.
+      placeholder: "Example: Pocket Assistant on iPhone 16 Pro on iOS 18.5"
 
   - type: dropdown
     id: frequency
@@ -75,5 +75,5 @@ body:
     attributes:
       label: Advanced context (optional)
       options:
-        - label: This worked in an earlier version of OpenPocketCine
+        - label: This worked in an earlier version of Pocket Assistant
         - label: I can reproduce this in the simulator without a real camera
