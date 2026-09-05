@@ -1,4 +1,9 @@
-# OpenPocketCine
+# Pocket Assistant
+
+This independent repository ships the Chinese-first Pocket Assistant iPhone
+target. Product entry points are README.md and docs/product-guide.zh-CN.md.
+Upstream code and engineering rules below are retained for shared control code.
+Inherited workflows in .github/upstream-workflows are reference-only.
 
 Open-source iOS + Android app to connect to and monitor DJI Osmo Pocket cameras —
 primarily **Osmo Pocket 4 / 4 Pro**, with Nano live view on AVC.
