@@ -3,7 +3,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Built something cool with OpenPocketCine? Showing off a rig or a workflow?
+        Built something cool with Pocket Assistant? Showing off a rig or a workflow?
         Share it here! Photos, videos, and links are all welcome.
   - type: textarea
     id: content
