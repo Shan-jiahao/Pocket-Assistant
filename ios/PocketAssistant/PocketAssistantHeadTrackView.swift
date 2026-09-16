@@ -25,7 +25,7 @@ struct PocketAssistantHeadTrackView: View {
             }
         }
         .navigationTitle("头追控制")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear { model.headphoneMotion.sync() }
         .sheet(isPresented: $showsSupportedHeadphones) {
             SupportedHeadphonesSheet()
@@ -130,7 +130,7 @@ struct PocketAssistantHeadTrackView: View {
                     pitch: model.headTrackHeadPitchDeg ?? 0,
                     active: model.headTrackMotionFresh
                 )
-                .frame(height: 190)
+                .frame(height: 170)
 
                 Button {
                     model.headphoneMotion.tapControl()

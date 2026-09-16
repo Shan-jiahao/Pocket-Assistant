@@ -40,11 +40,19 @@ struct PocketAssistantRoot: View {
         .tint(PocketAssistantDesign.primary)
         .environment(model)
         .onAppear { startIfNeeded() }
-        .onChange(of: model.keepScreenAwake) { _, awake in
-            UIApplication.shared.isIdleTimerDisabled = awake
+        .onChange(of: model.keepScreenAwake) { _, _ in
+            applyIdleTimerPolicy()
         }
         .onChange(of: model.headTrackingEnabled) { _, _ in
             model.headphoneMotion.sync()
+            refreshHeadTrackActivity()
+        }
+        .onChange(of: model.headTrackCalibrated) { _, _ in
+            applyIdleTimerPolicy()
+            refreshHeadTrackActivity()
+        }
+        .onChange(of: model.headTrackMotionFresh) { _, _ in
+            refreshHeadTrackActivity()
         }
         .onChange(of: model.session.phase) { oldPhase, newPhase in
             if case .live = newPhase {
@@ -55,15 +63,19 @@ struct PocketAssistantRoot: View {
                 model.headphoneMotion.noteLinkUnavailable()
                 model.noteLeftLive()
             }
+            refreshHeadTrackActivity()
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
                 model.session.noteSceneBecameActive()
                 model.headphoneMotion.sync()
+                refreshHeadTrackActivity()
             case .inactive, .background:
                 model.headphoneMotion.noteSceneBecameInactive()
                 model.session.noteSceneBecameInactive()
+                applyIdleTimerPolicy()
+                refreshHeadTrackActivity(isPaused: true)
             @unknown default:
                 break
             }
@@ -73,12 +85,15 @@ struct PocketAssistantRoot: View {
         ) { _ in
             model.headphoneMotion.noteSceneBecameInactive()
             model.session.noteSceneBecameInactive()
+            applyIdleTimerPolicy()
+            refreshHeadTrackActivity(isPaused: true)
         }
         .onReceive(
             NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
         ) { _ in
             model.session.noteSceneBecameActive()
             model.headphoneMotion.sync()
+            refreshHeadTrackActivity()
         }
     }
 
@@ -89,7 +104,24 @@ struct PocketAssistantRoot: View {
         AppModelDiagnosticsAnchor.model = model
         model.prepareStartup()
         model.headphoneMotion.attach(model: model)
-        UIApplication.shared.isIdleTimerDisabled = model.keepScreenAwake
+        applyIdleTimerPolicy()
+        refreshHeadTrackActivity()
         if model.savedCameras.isEmpty { selection = .devices }
+    }
+
+    private func applyIdleTimerPolicy() {
+        UIApplication.shared.isIdleTimerDisabled =
+            model.keepScreenAwake || model.headTrackCalibrated
+    }
+
+    private func refreshHeadTrackActivity(isPaused: Bool = false) {
+        guard #available(iOS 16.1, *) else { return }
+        PocketAssistantHeadTrackLiveActivity.refresh(
+            isEnabled: model.headTrackingEnabled,
+            isCalibrated: model.headTrackCalibrated,
+            pocketConnected: model.session.isControlLinkReady,
+            motionReady: model.headTrackMotionFresh,
+            isPaused: isPaused
+        )
     }
 }

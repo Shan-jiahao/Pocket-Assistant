@@ -65,4 +65,10 @@ Never store secrets, camera credentials, captures, or personal data here.
   It has no monitor or media workflow and reuses the existing Pocket
   connection/control stack and HeadTrack controller without protocol or PID
   forks. See `docs/pocket-assistant.md`.
+- 2026-09-16: A calibrated Pocket Assistant head-track session keeps the
+  foreground display awake to prevent idle locking. Manual lock, app switch,
+  inactive, and background states still stop the gimbal immediately; iOS does
+  not offer a supported continuous AirPods-motion control mode there. The
+  bundled Live Activity shows preparation, active, or safely-paused status on
+  the Lock Screen and Dynamic Island, but never becomes a camera control path.
 - Remove obsolete entries through a reviewed change to this file.
