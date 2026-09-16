@@ -3,14 +3,15 @@ import UIKit
 
 enum PocketAssistantTab: Hashable {
     case devices
-    case capture
     case headTrack
+    case capture
 }
 
 struct PocketAssistantRoot: View {
     @State private var model = AppModel()
     @State private var selection: PocketAssistantTab = .headTrack
     @State private var didStart = false
+    @State private var isPocketModeActive = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -22,20 +23,31 @@ struct PocketAssistantRoot: View {
             .tabItem { Label("设备", systemImage: "camera.fill") }
 
             NavigationStack {
+                PocketAssistantHeadTrackView {
+                    isPocketModeActive = true
+                }
+            }
+            .tag(PocketAssistantTab.headTrack)
+            .tabItem { Label("头追", systemImage: "viewfinder") }
+
+            NavigationStack {
                 PocketAssistantCaptureView {
                     selection = .devices
                 }
             }
             .tag(PocketAssistantTab.capture)
             .tabItem { Label("拍摄", systemImage: "record.circle") }
-
-            NavigationStack {
-                PocketAssistantHeadTrackView {
-                    selection = .devices
-                }
+        }
+        .overlay {
+            if isPocketModeActive {
+                PocketAssistantPocketModeView(
+                    onStop: {
+                        model.headphoneMotion.tapControl()
+                        isPocketModeActive = false
+                    },
+                    onExit: { isPocketModeActive = false }
+                )
             }
-            .tag(PocketAssistantTab.headTrack)
-            .tabItem { Label("头追", systemImage: "viewfinder") }
         }
         .tint(PocketAssistantDesign.primary)
         .environment(model)
@@ -48,6 +60,9 @@ struct PocketAssistantRoot: View {
             refreshHeadTrackActivity()
         }
         .onChange(of: model.headTrackCalibrated) { _, _ in
+            if !model.headTrackCalibrated {
+                isPocketModeActive = false
+            }
             applyIdleTimerPolicy()
             refreshHeadTrackActivity()
         }
@@ -72,6 +87,7 @@ struct PocketAssistantRoot: View {
                 model.headphoneMotion.sync()
                 refreshHeadTrackActivity()
             case .inactive, .background:
+                isPocketModeActive = false
                 model.headphoneMotion.noteSceneBecameInactive()
                 model.session.noteSceneBecameInactive()
                 applyIdleTimerPolicy()
@@ -83,6 +99,7 @@ struct PocketAssistantRoot: View {
         .onReceive(
             NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)
         ) { _ in
+            isPocketModeActive = false
             model.headphoneMotion.noteSceneBecameInactive()
             model.session.noteSceneBecameInactive()
             applyIdleTimerPolicy()

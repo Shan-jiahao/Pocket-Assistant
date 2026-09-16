@@ -4,7 +4,8 @@
 
 Make the head-track control page compact below the iPhone safe area, keep the
 screen awake while a calibrated head-track session is driving the Pocket, and
-make its safety state visible on the Lock Screen and Dynamic Island.
+make its safety state visible on the Lock Screen and Dynamic Island. Keep the
+bottom navigation in the operator workflow order: Devices, Head Track, Capture.
 
 ## Constraints
 
@@ -36,6 +37,9 @@ make its safety state visible on the Lock Screen and Dynamic Island.
    because it cannot safely own or reconnect the live camera control session.
 5. Update the Chinese product guide and parity contract with the foreground
    operation boundary.
+6. Add a calibrated-only Pocket Mode: a pure-black, low-distraction foreground
+   control surface with an immediate stop action and a deliberate long-press
+   exit. It must never be presented as a lock-screen or background workaround.
 
 ## Acceptance
 
@@ -49,6 +53,9 @@ make its safety state visible on the Lock Screen and Dynamic Island.
 - The Live Activity is visible on the Lock Screen and Dynamic Island when
   allowed by system settings, and always reflects the latest foreground state
   before the app is suspended.
+- The tab order is Devices, Head Track, Capture. Pocket Mode can only open
+  after calibration, preserves the existing foreground awake policy, and
+  closes as soon as calibration clears or the app becomes inactive.
 - Builds and focused tests pass. Real iPhone validation covers safe-area layout,
   auto-lock prevention, manual lock safety stop, and the Live Activity state.
 

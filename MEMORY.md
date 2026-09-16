@@ -60,7 +60,7 @@ Never store secrets, camera credentials, captures, or personal data here.
   approved recovery; re-wearing an earbud and playing audio restored samples
   during hardware validation.
 - 2026-09-05: `Pocket助手` is a separate Chinese-first iPhone app target. Its
-  stable tab order is Devices, Capture, Head Track; Capture owns the compact
+  stable tab order is Devices, Head Track, Capture; Capture owns the compact
   record and gimbal controls, and the app follows the iPhone system appearance.
   It has no monitor or media workflow and reuses the existing Pocket
   connection/control stack and HeadTrack controller without protocol or PID
@@ -71,4 +71,7 @@ Never store secrets, camera credentials, captures, or personal data here.
   not offer a supported continuous AirPods-motion control mode there. The
   bundled Live Activity shows preparation, active, or safely-paused status on
   the Lock Screen and Dynamic Island, but never becomes a camera control path.
+- 2026-09-16: Pocket Mode is a calibrated-only, pure-black foreground head-track
+  surface. It reduces accidental touch and light while retaining an immediate
+  stop action; it exits whenever calibration clears or the app becomes inactive.
 - Remove obsolete entries through a reviewed change to this file.

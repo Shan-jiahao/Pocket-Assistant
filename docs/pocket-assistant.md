@@ -74,7 +74,7 @@ coverage; that refactor is not required for product separation.
   presets or tune the four detailed parameters, inspect Apple's current
   dynamic-head-tracking headphone list, move/flip the gimbal and start/stop
   recording from the combined Capture tab without a video surface.
-- The tab order is Devices, Capture, Head Track; there is no separate Gimbal
+- The tab order is Devices, Head Track, Capture; there is no separate Gimbal
   tab. Light and dark appearance both remain readable and track system changes.
 - Head tracking stops safely for all lifecycle/link/motion failure cases.
 - Existing HeadTrack and iOS unit tests pass; both iOS schemes build for the

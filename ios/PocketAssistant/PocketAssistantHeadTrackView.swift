@@ -4,7 +4,7 @@ import SwiftUI
 struct PocketAssistantHeadTrackView: View {
     @Environment(AppModel.self) private var model
     @State private var showsSupportedHeadphones = false
-    let openDevices: () -> Void
+    let enterPocketMode: () -> Void
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
@@ -152,6 +152,30 @@ struct PocketAssistantHeadTrackView: View {
                 .disabled(!model.headTrackCalibrated && !canCalibrate)
                 .opacity(!model.headTrackCalibrated && !canCalibrate ? 0.42 : 1)
                 .accessibilityIdentifier("pocketAssistant.headTrack.control")
+
+                Button(action: enterPocketMode) {
+                    Label("进入口袋模式", systemImage: "lock.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(PocketAssistantDesign.text)
+                .background(
+                    PocketAssistantDesign.raised,
+                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                )
+                .disabled(!model.headTrackCalibrated)
+                .opacity(model.headTrackCalibrated ? 1 : 0.42)
+                .accessibilityHint(
+                    model.headTrackCalibrated
+                        ? "进入低干扰的前台控制界面" : "完成校准后可进入"
+                )
+                .accessibilityIdentifier("pocketAssistant.headTrack.pocketMode")
+
+                Text("完成校准后可进入低干扰界面；锁屏或切后台会安全停止头追。")
+                    .font(.caption)
+                    .foregroundStyle(PocketAssistantDesign.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 if let note = model.session.controlNote, !note.isEmpty {
                     Text(note.opcLocalized)
