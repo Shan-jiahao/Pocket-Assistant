@@ -13,7 +13,6 @@ struct PocketAssistantHeadTrackView: View {
             PocketAssistantBackground()
             ScrollView {
                 VStack(spacing: 16) {
-                    PocketAssistantLinkBanner(action: openDevices)
                     headLockCard
                     readinessCard
                     angleCard
@@ -27,14 +26,6 @@ struct PocketAssistantHeadTrackView: View {
         }
         .navigationTitle("头追控制")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Toggle("启用头追", isOn: Bindable(model).headTrackingEnabled)
-                    .labelsHidden()
-                    .tint(PocketAssistantDesign.primary)
-                    .accessibilityLabel("启用头追")
-            }
-        }
         .onAppear { model.headphoneMotion.sync() }
         .sheet(isPresented: $showsSupportedHeadphones) {
             SupportedHeadphonesSheet()
@@ -64,6 +55,31 @@ struct PocketAssistantHeadTrackView: View {
                         .accessibilityHint("打开支持动态头部跟踪的耳机型号列表")
                         Spacer(minLength: 0)
                     }
+
+                    Button {
+                        model.headTrackingEnabled.toggle()
+                    } label: {
+                        Label(
+                            model.headTrackingEnabled ? "头追已启用" : "启动头追",
+                            systemImage: model.headTrackingEnabled
+                                ? "checkmark.circle.fill" : "play.fill"
+                        )
+                        .font(.subheadline.weight(.bold))
+                        .frame(maxWidth: .infinity, minHeight: 46)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(
+                        model.headTrackingEnabled ? PocketAssistantDesign.primary : .white
+                    )
+                    .background(
+                        model.headTrackingEnabled
+                            ? PocketAssistantDesign.primary.opacity(0.12)
+                            : PocketAssistantDesign.primaryDeep,
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    )
+                    .accessibilityLabel(model.headTrackingEnabled ? "关闭头追" : "启动头追")
+                    .accessibilityHint("启用后会等待 AirPods 动作数据和 Pocket 云台状态")
+                    .accessibilityIdentifier("pocketAssistant.headTrack.enable")
 
                     HStack(alignment: .top, spacing: 12) {
                         Text(heroDetail)
@@ -282,7 +298,7 @@ struct PocketAssistantHeadTrackView: View {
     }
 
     private var heroDetail: String {
-        if !model.headTrackingEnabled { return "先打开右上角的头追开关。" }
+        if !model.headTrackingEnabled { return "点击“启动头追”后，等待 AirPods 动作数据。" }
         if !model.session.isControlLinkReady { return "先在“设备”页连接 Pocket。" }
         if !model.headTrackMotionFresh {
             return model.headTrackAirPodsConnected
@@ -412,7 +428,7 @@ private struct SupportedHeadphonesSheet: View {
                         systemImage: "waveform.path.ecg"
                     )
                     Label(
-                        "如果一直等待动作数据，请重新佩戴耳机，或关闭再打开右上角头追开关。",
+                        "如果一直等待动作数据，请重新佩戴耳机，或关闭再启动头追。",
                         systemImage: "arrow.clockwise"
                     )
                 }
