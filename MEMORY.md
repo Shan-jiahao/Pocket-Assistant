@@ -36,6 +36,11 @@ Never store secrets, camera credentials, captures, or personal data here.
 
 - Secret configuration locations and handling rules are documented in
   `SECURITY.md`; values must not be copied here.
+- 2026-09-16: Pocket Assistant device and TestFlight builds use Apple team
+  `8HS6U9RZJM` with bundle identifier `com.shanjiahao.pocketassistant`. The
+  paid-team provisioning profile includes Hotspot Configuration, so automatic
+  camera Wi-Fi join is the primary path; manual Settings join remains a runtime
+  fallback rather than the default product flow.
 - Apple Personal Teams cannot provision the Hotspot Configuration capability.
   For local device-only debugging, use a temporary empty entitlements file and
   a developer-owned bundle identifier at build time. Keep the checked-in

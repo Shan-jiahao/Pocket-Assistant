@@ -193,11 +193,11 @@ struct PocketAssistantDevicesView: View {
     private var connectionHelpCard: some View {
         PocketAssistantCard {
             VStack(alignment: .leading, spacing: 12) {
-                PocketAssistantSectionTitle("连接说明", detail: "开发签名版本可能需要手动连接相机 Wi-Fi。")
+                PocketAssistantSectionTitle("连接说明", detail: "Pocket助手会在 App 内完成蓝牙配对，并请求加入相机 Wi-Fi。")
                 helpRow(number: "1", text: "打开 Pocket，保持手机蓝牙开启。")
                 helpRow(number: "2", text: "选择相机并在 Pocket 屏幕上确认配对。")
-                helpRow(number: "3", text: "如果没有系统加入提示，到“设置 → 无线局域网”连接页面显示的相机名称。")
-                helpRow(number: "4", text: "看到蓝色对勾后直接返回 Pocket助手，连接会自动继续。")
+                helpRow(number: "3", text: "iPhone 弹出加入相机网络提示时，点击“加入”。")
+                helpRow(number: "4", text: "如果自动加入失败，连接页会显示目标 Wi-Fi 和手动操作说明。")
                 Text("Pocket Wi-Fi 没有互联网属于正常现象，请不要选择“忽略此网络”。")
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(PocketAssistantDesign.warning)

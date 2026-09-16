@@ -28,12 +28,14 @@ targets:
     settings:
       base:
         SWIFT_VERSION: "5.0"
-        PRODUCT_BUNDLE_IDENTIFIER: com.opencapture.pocketassistant
+        # Pocket Assistant's paid-team App ID. Keep this explicit so device and
+        # TestFlight builds receive the Hotspot Configuration entitlement.
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanjiahao.pocketassistant
         PRODUCT_NAME: PocketAssistant
         DEVELOPMENT_LANGUAGE: zh-Hans
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_ENTITLEMENTS: PocketAssistant/PocketAssistant.entitlements
-        DEVELOPMENT_TEAM: "4V4EGQ6LZA"
+        DEVELOPMENT_TEAM: "8HS6U9RZJM"
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Pocket助手

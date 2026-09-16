@@ -45,8 +45,10 @@ The app has three stable tabs, ordered around the normal setup-to-shoot flow:
   sample after authorization or an in-ear transition, the app performs up to
   three bounded push-stream restarts, falls back to the API's 25 Hz pull path,
   and then shows an actionable in-ear/retry message if both paths stay empty.
-- A Personal Team build keeps the manual Settings → Wi-Fi fallback. A paid-team
-  build can retain automatic Hotspot Configuration without UI changes.
+- Paid-team device and TestFlight builds use the product App ID and Hotspot
+  Configuration entitlement to request joining the camera Wi-Fi inside the app.
+  The manual Settings → Wi-Fi path appears only after automatic join is
+  unavailable or fails, and remains the Personal Team fallback.
 
 This first extraction intentionally shares the proven shell sources instead of
 moving protocol code between modules overnight. A later cleanup may split a
@@ -81,9 +83,9 @@ coverage; that refactor is not required for product separation.
 
 ## Risks and validation
 
-- A free Personal Team cannot provision Hotspot Configuration. Validate the
-  manual SSID path and do not discard cached credentials for entitlement error
-  code 8.
+- The paid-team profile must contain Hotspot Configuration. Validate the system
+  Join prompt and the manual SSID fallback on a physical iPhone; do not discard
+  cached credentials for entitlement error code 8 in Personal Team builds.
 - Simulator cannot validate AirPods motion, BLE, or Pocket UDP traffic. Those
   remain physical-device checks; simulator work validates navigation, Chinese
   layout, disabled states, and build integrity.

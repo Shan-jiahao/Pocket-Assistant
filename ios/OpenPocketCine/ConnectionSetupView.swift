@@ -267,11 +267,7 @@ struct ConnectionSetupView: View {
                     id: "wifi-iphone",
                     title: "On iPhone",
                     icon: .smartphone,
-                    steps: [
-                        "If iOS shows a Join prompt, tap Join",
-                        manualWiFiInstruction,
-                        "Return after the Wi-Fi checkmark appears — the app continues automatically",
-                    ]
+                    steps: wifiPhoneSteps
                 ),
                 tight: tight
             )
@@ -298,6 +294,19 @@ struct ConnectionSetupView: View {
         return String(
             format: "If no prompt appears, open Settings → Wi-Fi and connect to %@".opcLocalized,
             target)
+    }
+
+    private var wifiPhoneSteps: [String] {
+        if model.session.wifiJoinNeedsManualAction {
+            return [
+                manualWiFiInstruction,
+                "Return after the Wi-Fi checkmark appears — the app continues automatically",
+            ]
+        }
+        return [
+            "Tap Join when iOS asks to join the camera network",
+            "Stay on this screen until we open the datalink",
+        ]
     }
 
     private var datalinkStep: some View {
