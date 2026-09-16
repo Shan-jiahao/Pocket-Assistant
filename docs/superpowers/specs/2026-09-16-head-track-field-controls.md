@@ -40,6 +40,10 @@ bottom navigation in the operator workflow order: Devices, Head Track, Capture.
 6. Add a calibrated-only Pocket Mode: a pure-black, low-distraction foreground
    control surface with an immediate stop action and a deliberate long-press
    exit. It must never be presented as a lock-screen or background workaround.
+7. Expand the existing Live Activity into a Pocket control strip that exposes
+   last-known connection, battery, capture mode, format, and recording elapsed
+   time, and opens Pocket Assistant when tapped. It must not claim that this
+   display keeps the camera session or head tracking alive in the background.
 
 ## Acceptance
 
@@ -56,6 +60,10 @@ bottom navigation in the operator workflow order: Devices, Head Track, Capture.
 - The tab order is Devices, Head Track, Capture. Pocket Mode can only open
   after calibration, preserves the existing foreground awake policy, and
   closes as soon as calibration clears or the app becomes inactive.
+- With a connected Pocket, the Lock Screen and Dynamic Island show the Pocket
+  control strip even when head tracking is off. Tapping it opens the app; it
+  contains no direct record control until a real locked-device authorization
+  and control-link test proves that interaction safe.
 - Builds and focused tests pass. Real iPhone validation covers safe-area layout,
   auto-lock prevention, manual lock safety stop, and the Live Activity state.
 

@@ -9,9 +9,14 @@ enum PocketAssistantHeadTrackLiveActivity {
         isCalibrated: Bool,
         pocketConnected: Bool,
         motionReady: Bool,
+        isRecording: Bool,
+        recordElapsedSec: Int,
+        batteryPercent: Int,
+        captureMode: String,
+        captureFormat: String,
         isPaused: Bool = false
     ) {
-        guard isEnabled else {
+        guard isEnabled || pocketConnected else {
             end()
             return
         }
@@ -21,13 +26,21 @@ enum PocketAssistantHeadTrackLiveActivity {
                 .paused
             } else if isCalibrated {
                 .active
+            } else if !isEnabled {
+                .ready
             } else {
                 .preparing
             }
         let state = PocketAssistantHeadTrackActivityAttributes.ContentState(
             status: status,
             pocketConnected: pocketConnected,
-            motionReady: motionReady
+            motionReady: motionReady,
+            isRecording: isRecording,
+            recordStartedAt: isRecording
+                ? Date().addingTimeInterval(-TimeInterval(recordElapsedSec)) : nil,
+            batteryPercent: batteryPercent,
+            captureMode: captureMode,
+            captureFormat: captureFormat
         )
         let content = ActivityContent(state: state, staleDate: nil)
 

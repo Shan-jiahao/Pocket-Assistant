@@ -74,4 +74,8 @@ Never store secrets, camera credentials, captures, or personal data here.
 - 2026-09-16: Pocket Mode is a calibrated-only, pure-black foreground head-track
   surface. It reduces accidental touch and light while retaining an immediate
   stop action; it exits whenever calibration clears or the app becomes inactive.
+- 2026-09-16: The iOS Lock Screen/Dynamic Island Pocket control strip displays
+  last-known connection, battery, capture mode, format, and recording elapsed
+  time while a Pocket control link is ready. It is a display and app-entry
+  surface, not a background transport or head-tracking guarantee.
 - Remove obsolete entries through a reviewed change to this file.

@@ -80,6 +80,9 @@ struct PocketAssistantRoot: View {
             }
             refreshHeadTrackActivity()
         }
+        .onChange(of: model.session.status) { _, _ in
+            refreshHeadTrackActivity()
+        }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
@@ -138,7 +141,32 @@ struct PocketAssistantRoot: View {
             isCalibrated: model.headTrackCalibrated,
             pocketConnected: model.session.isControlLinkReady,
             motionReady: model.headTrackMotionFresh,
+            isRecording: model.session.status.isRecording,
+            recordElapsedSec: model.session.status.recordElapsedSec,
+            batteryPercent: model.session.status.batteryPercent,
+            captureMode: liveActivityCaptureMode,
+            captureFormat: liveActivityCaptureFormat,
             isPaused: isPaused
         )
+    }
+
+    private var liveActivityCaptureMode: String {
+        switch model.session.currentShootingMode {
+        case .slowMo: "慢动作"
+        case .video: "视频"
+        case .timeLapse: "延时摄影"
+        case .photo: "照片"
+        case .hyperLapse: "运动延时"
+        case .superNight: "超级夜景"
+        case nil: "Pocket"
+        }
+    }
+
+    private var liveActivityCaptureFormat: String {
+        if let format = model.session.status.videoFormat { return format.chipLabel }
+        if let resolution = model.session.status.videoResolution, model.session.status.fps > 0 {
+            return "\(resolution.label) · \(model.session.status.fps)p"
+        }
+        return "等待相机状态"
     }
 }
