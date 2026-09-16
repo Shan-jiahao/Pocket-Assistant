@@ -124,6 +124,7 @@ struct PocketAssistantRoot: View {
         AppModelDiagnosticsAnchor.model = model
         model.prepareStartup()
         model.headphoneMotion.attach(model: model)
+        configureLiveActivityCommands()
         applyIdleTimerPolicy()
         refreshHeadTrackActivity()
         if model.savedCameras.isEmpty { selection = .devices }
@@ -132,6 +133,17 @@ struct PocketAssistantRoot: View {
     private func applyIdleTimerPolicy() {
         UIApplication.shared.isIdleTimerDisabled =
             model.keepScreenAwake || model.headTrackCalibrated
+    }
+
+    private func configureLiveActivityCommands() {
+        guard #available(iOS 17.0, *) else { return }
+        PocketAssistantLiveActivityCommandRouter.toggleRecording = {
+            guard model.session.isControlLinkReady, !model.session.controlBusy else { return }
+            model.session.pressShutter()
+        }
+        PocketAssistantLiveActivityCommandRouter.openHeadTrack = {
+            selection = .headTrack
+        }
     }
 
     private func refreshHeadTrackActivity(isPaused: Bool = false) {

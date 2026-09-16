@@ -62,8 +62,9 @@ bottom navigation in the operator workflow order: Devices, Head Track, Capture.
   closes as soon as calibration clears or the app becomes inactive.
 - With a connected Pocket, the Lock Screen and Dynamic Island show the Pocket
   control strip even when head tracking is off. Tapping it opens the app; it
-  contains no direct record control until a real locked-device authorization
-  and control-link test proves that interaction safe.
+  has a red record/stop action that rechecks the Pocket control link before
+  using the existing shutter API. "校准并锁定" requires system authentication,
+  opens the head-track page, and does not calibrate while the device is locked.
 - Builds and focused tests pass. Real iPhone validation covers safe-area layout,
   auto-lock prevention, manual lock safety stop, and the Live Activity state.
 

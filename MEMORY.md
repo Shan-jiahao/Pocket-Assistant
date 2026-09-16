@@ -78,4 +78,8 @@ Never store secrets, camera credentials, captures, or personal data here.
   last-known connection, battery, capture mode, format, and recording elapsed
   time while a Pocket control link is ready. It is a display and app-entry
   surface, not a background transport or head-tracking guarantee.
+- 2026-09-16: The control strip's red record/stop action uses the existing
+  shutter API only after iOS authentication and a fresh control-link check.
+  Its "校准并锁定" action opens the Head Track page rather than calibrating from
+  lock screen state, preserving the live-motion and stillness checks.
 - Remove obsolete entries through a reviewed change to this file.

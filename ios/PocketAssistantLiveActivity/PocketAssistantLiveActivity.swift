@@ -47,6 +47,31 @@ struct PocketAssistantHeadTrackLiveActivityWidget: Widget {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+                if #available(iOS 17.0, *) {
+                    HStack(spacing: 10) {
+                        Button(intent: PocketAssistantOpenHeadTrackIntent()) {
+                            Label("校准并锁定", systemImage: "scope")
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: 38)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.blue)
+
+                        Button(intent: PocketAssistantToggleRecordingIntent()) {
+                            Label(
+                                context.state.isRecording ? "停止录制" : "开始录制",
+                                systemImage: context.state.isRecording
+                                    ? "stop.fill" : "record.circle"
+                            )
+                            .font(.subheadline.weight(.bold))
+                            .frame(maxWidth: .infinity, minHeight: 38)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
+                        .disabled(!context.state.pocketConnected)
+                    }
+                }
             }
             .padding(14)
             .activityBackgroundTint(Color.black.opacity(0.86))
