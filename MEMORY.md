@@ -82,4 +82,7 @@ Never store secrets, camera credentials, captures, or personal data here.
   shutter API only after iOS authentication and a fresh control-link check.
   Its "校准并锁定" action opens the Head Track page rather than calibrating from
   lock screen state, preserving the live-motion and stillness checks.
+- 2026-09-17: TestFlight validation requires `CFBundleDisplayName` in the
+  `PocketAssistantLiveActivity` extension as well as in the host app. Keep the
+  generated extension `Info.plist` and `ios/project.yml` in sync.
 - Remove obsolete entries through a reviewed change to this file.
