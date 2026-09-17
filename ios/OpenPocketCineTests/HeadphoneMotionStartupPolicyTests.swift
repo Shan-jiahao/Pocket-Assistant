@@ -60,4 +60,37 @@ final class HeadphoneMotionStartupPolicyTests: XCTestCase {
                 alreadyUsingFallback: true
             ))
     }
+
+    func testProvisionalDisconnectIsConfirmedWhenNoNewConnectionEventArrives() {
+        XCTAssertTrue(
+            HeadphoneMotionStartupPolicy.shouldConfirmDisconnect(
+                generation: 4, currentGeneration: 4, motionDesired: true))
+    }
+
+    func testProvisionalDisconnectIsCancelledByReconnect() {
+        XCTAssertFalse(
+            HeadphoneMotionStartupPolicy.shouldConfirmDisconnect(
+                generation: 4, currentGeneration: 5, motionDesired: true))
+    }
+
+    func testLifecycleStopSuppressesLateDisconnectCallback() {
+        XCTAssertFalse(
+            HeadphoneMotionStartupPolicy.shouldConfirmDisconnect(
+                generation: 4, currentGeneration: 4, motionDesired: false))
+    }
+
+    func testMotionStartIsSerializedUntilFirstRequestSettles() {
+        XCTAssertTrue(
+            HeadphoneMotionStartupPolicy.shouldBeginMotion(
+                motionDesired: true, isActive: false, startRequested: false))
+        XCTAssertFalse(
+            HeadphoneMotionStartupPolicy.shouldBeginMotion(
+                motionDesired: true, isActive: false, startRequested: true))
+        XCTAssertFalse(
+            HeadphoneMotionStartupPolicy.shouldBeginMotion(
+                motionDesired: true, isActive: true, startRequested: false))
+        XCTAssertFalse(
+            HeadphoneMotionStartupPolicy.shouldBeginMotion(
+                motionDesired: false, isActive: false, startRequested: false))
+    }
 }

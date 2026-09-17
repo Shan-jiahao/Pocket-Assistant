@@ -101,6 +101,13 @@ public struct SessionRecoveryPolicy: Sendable, Equatable {
 
 /// Operator-facing recovery copy. Never names a sister app or another brand.
 public enum SessionRecoveryCopy {
+    public static func recoveryLog(failedAttempts: Int) -> String {
+        let failures = max(0, failedAttempts)
+        if failures == 0 { return "session: recovered on first attempt" }
+        if failures == 1 { return "session: recovered after 1 failed attempt" }
+        return "session: recovered after \(failures) failed attempts"
+    }
+
     public static func title(_ state: SessionRecoveryState) -> String {
         switch state {
         case .idle: return ""

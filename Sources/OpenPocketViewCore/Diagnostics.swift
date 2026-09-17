@@ -238,14 +238,17 @@ public enum DiagnosticReport: Sendable {
             phase: \(environment.phase)
             """)
         if !exceptions.isEmpty {
-            sections.append("Exceptions / faults\n" + exceptions.suffix(exceptionCap).joined(separator: "\n"))
+            sections.append(
+                "Exceptions / faults\n" + exceptions.suffix(exceptionCap).joined(separator: "\n"))
         }
         for extra in extras where !extra.body.isEmpty {
-            sections.append("\(extra.name)\n\(extra.body)")
+            sections.append(
+                "Historical system diagnostics (may describe an earlier app build) — \(extra.name)\n\(extra.body)"
+            )
         }
         if !journal.isEmpty {
             sections.append(
-                "Journal (last \(min(journal.count, journalCap)) lines)\n"
+                "Rolling journal across app launches (last \(min(journal.count, journalCap)) lines; current app/camera state is shown above)\n"
                     + journal.suffix(journalCap).joined(separator: "\n"))
         }
         return PrivacyRedactor.redact(sections.joined(separator: "\n\n"))

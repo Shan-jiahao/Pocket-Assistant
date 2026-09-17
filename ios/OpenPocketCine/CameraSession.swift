@@ -4054,7 +4054,7 @@ final class CameraSession {
                 holdsMonitor = false
                 isReconnecting = false
                 sessionRecoveryCardGraceElapsed = false
-                ControlLiveLog.line("session: recovered after \(failures) failed attempt(s)")
+                ControlLiveLog.line(SessionRecoveryCopy.recoveryLog(failedAttempts: failures))
                 applyLinkPresentation()
                 return
             }
