@@ -36,6 +36,11 @@ Never store secrets, camera credentials, captures, or personal data here.
 
 - Secret configuration locations and handling rules are documented in
   `SECURITY.md`; values must not be copied here.
+- 2026-09-16: Pocket Assistant device and TestFlight builds use Apple team
+  `8HS6U9RZJM` with bundle identifier `com.shanjiahao.pocketassistant`. The
+  paid-team provisioning profile includes Hotspot Configuration, so automatic
+  camera Wi-Fi join is the primary path; manual Settings join remains a runtime
+  fallback rather than the default product flow.
 - Apple Personal Teams cannot provision the Hotspot Configuration capability.
   For local device-only debugging, use a temporary empty entitlements file and
   a developer-owned bundle identifier at build time. Keep the checked-in
@@ -55,9 +60,26 @@ Never store secrets, camera credentials, captures, or personal data here.
   approved recovery; re-wearing an earbud and playing audio restored samples
   during hardware validation.
 - 2026-09-05: `Pocket助手` is a separate Chinese-first iPhone app target. Its
-  stable tab order is Devices, Capture, Head Track; Capture owns the compact
+  stable tab order is Devices, Head Track, Capture; Capture owns the compact
   record and gimbal controls, and the app follows the iPhone system appearance.
   It has no monitor or media workflow and reuses the existing Pocket
   connection/control stack and HeadTrack controller without protocol or PID
   forks. See `docs/pocket-assistant.md`.
+- 2026-09-16: A calibrated Pocket Assistant head-track session keeps the
+  foreground display awake to prevent idle locking. Manual lock, app switch,
+  inactive, and background states still stop the gimbal immediately; iOS does
+  not offer a supported continuous AirPods-motion control mode there. The
+  bundled Live Activity shows preparation, active, or safely-paused status on
+  the Lock Screen and Dynamic Island, but never becomes a camera control path.
+- 2026-09-16: Pocket Mode is a calibrated-only, pure-black foreground head-track
+  surface. It reduces accidental touch and light while retaining an immediate
+  stop action; it exits whenever calibration clears or the app becomes inactive.
+- 2026-09-16: The iOS Lock Screen/Dynamic Island Pocket control strip displays
+  last-known connection, battery, capture mode, format, and recording elapsed
+  time while a Pocket control link is ready. It is a display and app-entry
+  surface, not a background transport or head-tracking guarantee.
+- 2026-09-16: The control strip's red record/stop action uses the existing
+  shutter API only after iOS authentication and a fresh control-link check.
+  Its "校准并锁定" action opens the Head Track page rather than calibrating from
+  lock screen state, preserving the live-motion and stillness checks.
 - Remove obsolete entries through a reviewed change to this file.

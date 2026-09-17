@@ -22,18 +22,25 @@ targets:
           - Frameio.xcconfig
           - OpenPocketCine.entitlements
       - PocketAssistant
+      - PocketAssistantShared
     dependencies:
       - package: OpenPocketViewCore
         product: OpenPocketViewCore
+      - target: PocketAssistantLiveActivity
+        embed: true
     settings:
       base:
         SWIFT_VERSION: "5.0"
-        PRODUCT_BUNDLE_IDENTIFIER: com.opencapture.pocketassistant
+        # Pocket Assistant's paid-team App ID. Keep this explicit so device and
+        # TestFlight builds receive the Hotspot Configuration entitlement.
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanjiahao.pocketassistant
         PRODUCT_NAME: PocketAssistant
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
         DEVELOPMENT_LANGUAGE: zh-Hans
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_ENTITLEMENTS: PocketAssistant/PocketAssistant.entitlements
-        DEVELOPMENT_TEAM: "4V4EGQ6LZA"
+        DEVELOPMENT_TEAM: "8HS6U9RZJM"
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Pocket助手
@@ -48,6 +55,29 @@ targets:
         INFOPLIST_KEY_NSMotionUsageDescription: "Pocket助手使用耳机运动数据，让 AirPods 的方向控制云台。"
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: "Pocket助手通过相机自己的 Wi-Fi 网络读取状态并控制 Pocket。"
         INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking: YES
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
+
+  PocketAssistantLiveActivity:
+    type: app-extension
+    platform: iOS
+    sources:
+      - PocketAssistantLiveActivity
+      - PocketAssistantShared
+    settings:
+      base:
+        SWIFT_VERSION: "5.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanjiahao.pocketassistant.liveactivity
+        PRODUCT_NAME: PocketAssistantLiveActivity
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        DEVELOPMENT_TEAM: "8HS6U9RZJM"
+        CODE_SIGN_STYLE: Automatic
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
+    info:
+      path: PocketAssistantLiveActivity/Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
 
   OpenPocketCine:
     type: application
