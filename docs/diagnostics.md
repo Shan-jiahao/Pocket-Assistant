@@ -61,5 +61,8 @@ Android has no TestFlight screenshot hook — PARITY exception.
 
 Crashes, hangs, CPU/disk exceptions are written under
 `Documents/diagnostics/metrickit-*.json` when the system delivers them.
-They are included in **Share Diagnostics**. TestFlight still gets Apple’s
+They are labeled as historical system payloads because iOS may deliver data
+from an earlier app build. The rolling journal is likewise labeled as spanning
+multiple launches; the report header is the current app/camera state. They are
+included in **Share Diagnostics**. TestFlight still gets Apple’s
 own crash reports regardless.

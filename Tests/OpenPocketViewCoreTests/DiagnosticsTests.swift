@@ -74,6 +74,22 @@ import Testing
         #expect(event.journalLine.contains("needsPoke=1"))
     }
 
+    @Test func fullReportSeparatesCurrentStateFromHistoricalPayloads() {
+        let env = DiagnosticEnvironment(
+            appVersion: "1.0", appBuild: "1", osName: "iOS", osVersion: "26.0",
+            deviceModel: "iPhone17,2", cameraFamily: "pocket",
+            cameraModel: "Osmo Pocket 3", phase: "live")
+        let text = DiagnosticReport.fullReport(
+            environment: env,
+            journal: ["older launch line"],
+            exceptions: [],
+            extras: [(name: "metrickit-metric-0.json", body: #"{"appVersion":"0.1.0"}"#)])
+        #expect(text.contains("Historical system diagnostics"))
+        #expect(text.contains("may describe an earlier app build"))
+        #expect(text.contains("Rolling journal across app launches"))
+        #expect(text.contains("app: 1.0 (1)"))
+    }
+
     @Test func debugDoesNotPersist() {
         #expect(!DiagnosticLevel.debug.persistsToJournal)
         #expect(DiagnosticLevel.info.persistsToJournal)

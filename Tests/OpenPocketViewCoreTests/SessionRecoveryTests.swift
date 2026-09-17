@@ -109,6 +109,18 @@ struct SessionDropStormGuardTests {
 
 @Suite("Session recovery copy")
 struct SessionRecoveryCopyTests {
+    @Test func recoveryLogDoesNotClaimZeroFailedAttempts() {
+        #expect(
+            SessionRecoveryCopy.recoveryLog(failedAttempts: 0)
+                == "session: recovered on first attempt")
+        #expect(
+            SessionRecoveryCopy.recoveryLog(failedAttempts: 1)
+                == "session: recovered after 1 failed attempt")
+        #expect(
+            SessionRecoveryCopy.recoveryLog(failedAttempts: 3)
+                == "session: recovered after 3 failed attempts")
+    }
+
     @Test func retryingCopy() {
         let state = SessionRecoveryState.retrying(attempt: 3, maxAttempts: 8)
         #expect(SessionRecoveryCopy.title(state) == "Reconnecting…")

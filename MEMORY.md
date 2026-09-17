@@ -85,4 +85,8 @@ Never store secrets, camera credentials, captures, or personal data here.
 - 2026-09-17: TestFlight validation requires `CFBundleDisplayName` in the
   `PocketAssistantLiveActivity` extension as well as in the host app. Keep the
   generated extension `Info.plist` and `ios/project.yml` in sync.
+- 2026-09-17: AirPods motion startup is serialized across sync and delegate
+  callbacks. A 250 ms stale sample still clears calibration and rests the
+  gimbal immediately, then rebuilds Core Motion through the bounded startup
+  recovery; recovered samples never resume driving without user calibration.
 - Remove obsolete entries through a reviewed change to this file.

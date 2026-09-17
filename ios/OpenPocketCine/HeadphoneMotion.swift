@@ -6,6 +6,7 @@ import os
 struct HeadphoneMotionStartupPolicy {
     static let firstSampleTimeout: TimeInterval = 1
     static let maxAutomaticRestarts = 3
+    static let provisionalDisconnectDelay: TimeInterval = 0.35
 
     static func shouldRestart(
         startedAt: TimeInterval?, now: TimeInterval, hasSample: Bool, restartCount: Int
@@ -20,6 +21,18 @@ struct HeadphoneMotionStartupPolicy {
         hasSample: Bool, restartCount: Int, alreadyUsingFallback: Bool
     ) -> Bool {
         !hasSample && !alreadyUsingFallback && restartCount >= maxAutomaticRestarts
+    }
+
+    static func shouldConfirmDisconnect(
+        generation: Int, currentGeneration: Int, motionDesired: Bool
+    ) -> Bool {
+        motionDesired && generation == currentGeneration
+    }
+
+    static func shouldBeginMotion(
+        motionDesired: Bool, isActive: Bool, startRequested: Bool
+    ) -> Bool {
+        motionDesired && !isActive && !startRequested
     }
 }
 
@@ -89,6 +102,10 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
     private var motionRestartCount = 0
     private var usesPullFallback = false
     private var didReportMissingFirstSample = false
+    private var motionDesired = false
+    private var motionStartRequested = false
+    private var connectionEventGeneration = 0
+    private var provisionalDisconnectTask: Task<Void, Never>?
     private var lastHudAt: Date?
     private var lastLogAt: Date?
     private var centerHaptic = UIImpactFeedbackGenerator(style: .medium)
@@ -253,35 +270,67 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
     }
 
     nonisolated func headphoneMotionManagerDidConnect(_ manager: CMHeadphoneMotionManager) {
-        Task { @MainActor in
-            ControlLiveLog.line("head-track: AirPods connected")
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.connectionEventGeneration += 1
+            self.provisionalDisconnectTask?.cancel()
+            self.provisionalDisconnectTask = nil
+            if self.model?.headTrackAirPodsConnected != true {
+                ControlLiveLog.line("head-track: AirPods connected")
+            }
             self.didToastNeedPods = false
             self.model?.headTrackAirPodsConnected = true
-            if self.model?.headTrackingEnabled == true {
-                self.resetMotionStartupState()
-                if self.motion.isDeviceMotionActive {
-                    self.motion.stopDeviceMotionUpdates()
-                }
+            if self.motionDesired, self.model?.headTrackingEnabled == true {
                 self.startMotion()
             }
-            self.sync()
         }
     }
 
     nonisolated func headphoneMotionManagerDidDisconnect(_ manager: CMHeadphoneMotionManager) {
-        Task { @MainActor in
-            ControlLiveLog.line("head-track: AirPods disconnected")
-            self.haveHead = false
-            self.latestHead.withLock { $0 = nil }
-            self.model?.headTrackAirPodsConnected = false
-            self.stopForSafety(reason: "AirPods disconnected")
-            if self.model?.headTrackingEnabled == true {
-                self.model?.session.controlNote = "Head tracking needs AirPods in your ears"
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            guard self.motionDesired else { return }
+            self.connectionEventGeneration += 1
+            let generation = self.connectionEventGeneration
+            self.provisionalDisconnectTask?.cancel()
+            if self.haveHead || self.calibratedByUser || self.driving || self.pendingCalibrate {
+                self.confirmAirPodsDisconnect()
+                return
+            }
+            self.provisionalDisconnectTask = Task { @MainActor [weak self] in
+                try? await Task.sleep(
+                    for: .milliseconds(
+                        Int(HeadphoneMotionStartupPolicy.provisionalDisconnectDelay * 1_000)))
+                guard let self, !Task.isCancelled else { return }
+                guard
+                    HeadphoneMotionStartupPolicy.shouldConfirmDisconnect(
+                        generation: generation,
+                        currentGeneration: self.connectionEventGeneration,
+                        motionDesired: self.motionDesired
+                    )
+                else { return }
+                self.confirmAirPodsDisconnect()
             }
         }
     }
 
+    private func confirmAirPodsDisconnect() {
+        provisionalDisconnectTask?.cancel()
+        provisionalDisconnectTask = nil
+        ControlLiveLog.line("head-track: AirPods disconnected")
+        haveHead = false
+        latestHead.withLock { $0 = nil }
+        model?.headTrackAirPodsConnected = false
+        stopForSafety(reason: "AirPods disconnected")
+        if motion.isDeviceMotionActive { motion.stopDeviceMotionUpdates() }
+        motionStartRequested = false
+        if model?.headTrackingEnabled == true {
+            model?.session.controlNote = "Head tracking needs AirPods in your ears"
+        }
+    }
+
     private func startMotion() {
+        motionDesired = true
         let auth = CMHeadphoneMotionManager.authorizationStatus()
         ControlLiveLog.line(
             "head-track: auth=\(Self.authLabel(auth)) available=\(motion.isDeviceMotionAvailable ? 1 : 0) active=\(motion.isDeviceMotionActive ? 1 : 0)"
@@ -309,11 +358,25 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
         }
         model?.headTrackAirPodsConnected = true
         startSamplePump()
-        guard !motion.isDeviceMotionActive else { return }
+        guard
+            HeadphoneMotionStartupPolicy.shouldBeginMotion(
+                motionDesired: motionDesired,
+                isActive: motion.isDeviceMotionActive,
+                startRequested: motionStartRequested
+            )
+        else { return }
         beginMotionUpdates()
     }
 
     private func beginMotionUpdates() {
+        guard
+            HeadphoneMotionStartupPolicy.shouldBeginMotion(
+                motionDesired: motionDesired,
+                isActive: motion.isDeviceMotionActive,
+                startRequested: motionStartRequested
+            )
+        else { return }
+        motionStartRequested = true
         latestHead.withLock { $0 = nil }
         motionStartedAt = ProcessInfo.processInfo.systemUptime
         ControlLiveLog.line(
@@ -324,6 +387,7 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
                 Task { @MainActor in
                     ControlLiveLog.line("head-track: motion error \(error.localizedDescription)")
                     guard let self else { return }
+                    self.motionStartRequested = false
                     self.haveHead = false
                     self.latestHead.withLock { $0 = nil }
                     self.model?.headTrackAirPodsConnected = false
@@ -360,6 +424,7 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
                 self.motionStartedAt = nil
                 self.motionRestartCount = 0
                 self.didReportMissingFirstSample = false
+                self.motionStartRequested = false
                 ControlLiveLog.line(
                     self.usesPullFallback
                         ? "head-track: first motion sample via pull fallback"
@@ -405,6 +470,7 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
                 "head-track: no first sample — restart \(motionRestartCount)/\(HeadphoneMotionStartupPolicy.maxAutomaticRestarts)"
             )
             if motion.isDeviceMotionActive { motion.stopDeviceMotionUpdates() }
+            motionStartRequested = false
             beginMotionUpdates()
             return
         }
@@ -415,6 +481,7 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
         ) {
             usesPullFallback = true
             if motion.isDeviceMotionActive { motion.stopDeviceMotionUpdates() }
+            motionStartRequested = true
             latestHead.withLock { $0 = nil }
             motionStartedAt = now
             ControlLiveLog.line("head-track: switching to pull fallback")
@@ -443,7 +510,7 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
     private func pullHead() {
         guard let sample = latestHead.withLock({ $0 }) else { return }
         guard ProcessInfo.processInfo.systemUptime - sample.receivedAt <= Self.motionTimeout else {
-            stopForSafety(reason: "motion timeout")
+            recoverStalledMotion()
             return
         }
         lastGx = sample.gx
@@ -574,8 +641,19 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
             return
         }
         if ProcessInfo.processInfo.systemUptime - sample.receivedAt > Self.motionTimeout {
-            stopForSafety(reason: "motion timeout")
+            recoverStalledMotion()
         }
+    }
+
+    private func recoverStalledMotion() {
+        stopForSafety(reason: "motion timeout")
+        guard motionDesired, model?.headTrackingEnabled == true else { return }
+        haveHead = false
+        latestHead.withLock { $0 = nil }
+        resetMotionStartupState()
+        if motion.isDeviceMotionActive { motion.stopDeviceMotionUpdates() }
+        ControlLiveLog.line("head-track: stalled motion stream — restarting")
+        beginMotionUpdates()
     }
 
     private func stopForSafety(reason: String, markUserStopped: Bool = false) {
@@ -596,6 +674,10 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
     }
 
     private func stopMotion() {
+        motionDesired = false
+        connectionEventGeneration += 1
+        provisionalDisconnectTask?.cancel()
+        provisionalDisconnectTask = nil
         stopSamplePump()
         if motion.isDeviceMotionActive { motion.stopDeviceMotionUpdates() }
         if motion.isConnectionStatusActive { motion.stopConnectionStatusUpdates() }
@@ -609,6 +691,7 @@ final class HeadphoneMotionBridge: NSObject, CMHeadphoneMotionManagerDelegate {
         motionRestartCount = 0
         usesPullFallback = false
         didReportMissingFirstSample = false
+        motionStartRequested = false
     }
 
     private func publishReadout(now: Date?) {
